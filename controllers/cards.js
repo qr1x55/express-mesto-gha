@@ -22,16 +22,13 @@ module.exports.getCards = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: `Не найдена карточка с ID: ${req.params.cardId}` });
-        return;
-      }
-      res.send({ message: 'Карточка удалена' });
-    })
+    .orFail()
+    .then(() => res.send({ message: 'Карточка удалена' }))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         res.status(400).send({ message: `Некорректный ID: ${req.params.cardId}` });
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        res.status(404).send({ message: `Не найдена карточка с ID: ${req.params.cardId}` });
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
@@ -40,16 +37,13 @@ module.exports.deleteCard = (req, res) => {
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: `Не найдена карточка с ID: ${req.params.cardId}` });
-        return;
-      }
-      res.send(card);
-    })
+    .orFail()
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         res.status(400).send({ message: `Некорректный ID: ${req.params.cardId}` });
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        res.status(404).send({ message: `Не найдена карточка с ID: ${req.params.cardId}` });
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
@@ -58,16 +52,13 @@ module.exports.likeCard = (req, res) => {
 
 module.exports.removeLikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: `Не найдена карточка с ID: ${req.params.cardId}` });
-        return;
-      }
-      res.send(card);
-    })
+    .orFail()
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         res.status(400).send({ message: `Некорректный ID: ${req.params.cardId}` });
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        res.status(404).send({ message: `Не найдена карточка с ID: ${req.params.cardId}` });
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
