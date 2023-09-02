@@ -11,6 +11,7 @@ router.use('/signin', login);
 router.use(auth);
 router.use('/users', usersRoutes);
 router.use('/cards', cardsRoutes);
+
 router.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const UnauthorizedError = require('../errors/UnauthorizedError');
-const { regexUrl, regexEmail } = require('../utils/constants');
+const regexUrl = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator(email) {
-        return regexEmail.test(email);
+        return /^\S+@\S+\.\S+$/.test(email);
       },
       message: 'Некорректный email',
     },
